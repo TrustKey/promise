@@ -18,7 +18,7 @@ class PromiseService {
     }
 
     tryFindTargetAlgorithm(request, callback) {
-        if(!request || !request["promise_alg"]) {
+        if(!request || typeof request !== 'object' || !request["promise_alg"]) {
             callback({success: false, error: "No promise_alg supplied"});
             return null;
         }
