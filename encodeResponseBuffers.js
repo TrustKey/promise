@@ -17,6 +17,6 @@ function iterate(obj) {
 
 module.exports = (callback) => {
     return (response) => {
-        callback(iterate(response));
+        callback(iterate({tmp: response}).tmp);
     }
 };
