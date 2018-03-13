@@ -55,6 +55,13 @@ class PromiseService {
         for(let k in request) {
             let property = request[k];
             if(typeof property === 'object' && typeof property._f === 'string') {
+                if(!request.___resolved)
+                    request.___resolved = [];
+                if(request.___resolved.filter(propertyName => propertyName === k)[0])
+                    continue;
+                else
+                    request.___resolved.push(k);
+
                 this.resolve(property,
                     (response) => { //We've resolved a promise property, try to resolve promise again
                         request[k] = response;
@@ -75,6 +82,8 @@ class PromiseService {
                 return;
             }
         }
+
+        delete request.___resolved;
 
         targetAlgorithm.resolve(
             request,
