@@ -24,6 +24,9 @@ class PromiseService {
     resolve(request, resolve, reject) { //reject function is optional argument
         if(!reject) {
             let callback = resolve;
+            if(!callback)
+                callback = (response) => console.log(response);
+
             resolve = (response) => {
                 callback({
                     success: true,
@@ -44,12 +47,9 @@ class PromiseService {
             };
         }
 
-        if(!request || typeof request !== 'object' || typeof request["_f"] !== 'string')
-            return reject({error: "No _f supplied"});
+        if(!request || typeof request !== 'object')
+            return reject({error: "Request is not an object"});
 
-        const targetAlgorithm = this.algorithms.filter((a) => a.name === request["_f"])[0];
-        if(!targetAlgorithm)
-            return reject({error: "Unable to find target algorithm"});
 
         //Resolving sub-promises recursively
         for(let k in request) {
@@ -84,6 +84,16 @@ class PromiseService {
         }
 
         delete request.___resolved;
+
+        if(!request._f)
+            return resolve(request);
+
+        if(typeof request["_f"] !== 'string')
+            request._f = "not_existing_algorithm";
+
+        const targetAlgorithm = this.algorithms.filter((a) => a.name === request["_f"])[0];
+        if(!targetAlgorithm)
+            return reject({error: "Unable to find target algorithm"});
 
         targetAlgorithm.resolve(
             request,
